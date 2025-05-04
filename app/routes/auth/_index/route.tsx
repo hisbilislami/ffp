@@ -1,8 +1,15 @@
 import { getFormProps, getInputProps, useForm } from "@conform-to/react";
 import { getZodConstraint, parseWithZod } from "@conform-to/zod";
-import { Button, Flex, PasswordInput, TextInput } from "@mantine/core";
-import { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
-import { Form, useActionData } from "@remix-run/react";
+import {
+  Button,
+  Flex,
+  PasswordInput,
+  Text,
+  TextInput,
+  Title,
+} from "@mantine/core";
+import { ActionFunctionArgs } from "@remix-run/node";
+import { Form, Link, useActionData } from "@remix-run/react";
 import { loginFormSchema, loginLabel } from "./constant";
 import { handleAction } from "./action";
 
@@ -24,9 +31,18 @@ const Signin = () => {
   });
 
   return (
-    <Flex>
-      <div>
-        <Form method="post" {...getFormProps(form)}>
+    <Flex className="h-screen w-full" justify="center" align="center">
+      <div className="bg-bill-orange-100 p-8 rounded-xl">
+        <Title order={1} mb={50} className="text-bill-orange-500">
+          Farm Financial Planning
+        </Title>
+        <Title order={3} py={4}>
+          Sign-in here
+        </Title>
+        <Text c="dimmed" py={4} mb={30}>
+          Enter username & password for sign-in to ffp
+        </Text>
+        <Form method="post" {...getFormProps(form)} className="space-y-4">
           <TextInput
             {...loginLabel["username"]}
             {...getInputProps(fields.username, { type: "text" })}
@@ -37,7 +53,16 @@ const Signin = () => {
             {...getInputProps(fields.password, { type: "password" })}
             error={fields.password?.errors?.[0] ?? null}
           />
-          <Button type="submit">Submit</Button>
+          <Button type="submit" size="sm" fullWidth>
+            Sign-in
+          </Button>
+          <Text className="text-xs w-full text-center">
+            Don't have an account yet ?
+            <Link to="/auth/register" className="underline text-bill-blue-500">
+              {" "}
+              Register now
+            </Link>
+          </Text>
         </Form>
       </div>
     </Flex>

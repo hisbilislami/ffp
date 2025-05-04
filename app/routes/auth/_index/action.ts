@@ -4,6 +4,9 @@ import { loginFormSchema } from "./constant";
 import { prisma } from "~/utils/db.server";
 
 import bcrypt from "bcryptjs";
+import { BadRequestError } from "~/utils/error.server";
+import { createToastHeaders } from "~/utils/toast.server";
+import { createUserSession } from "~/utils/session.server";
 
 export const handleAction = async (request: ActionFunctionArgs["request"]) => {
   const formData = await request.formData();
@@ -20,7 +23,10 @@ export const handleAction = async (request: ActionFunctionArgs["request"]) => {
     });
 
     if (!user || !user.password) {
-      throw new Error("Username and password does not match");
+      throw new BadRequestError("Bad Request", {
+        title: "Failed",
+        description: "Username and password does not match",
+      });
     }
 
     const isValid = await bcrypt.compare(
@@ -29,13 +35,42 @@ export const handleAction = async (request: ActionFunctionArgs["request"]) => {
     );
 
     if (!isValid) {
-      throw new Error("Username and password does not match");
+      throw new BadRequestError("Bad Request", {
+        title: "Failed",
+        description: "Username and password does not match",
+      });
     }
 
-    return new Response(JSON.stringify(user));
+    return await createUserSession({
+      request,
+      redirectTo: "/app",
+      userId: user.id,
+      userCred: {
+        username: user.username,
+      },
+      shouldRemember: false,
+    });
   } catch (error) {
-    return new Response(
-      JSON.stringify(error instanceof Error ? error.message : null)
-    );
+    let response: Response;
+    if (error instanceof BadRequestError) {
+      response = new Response(JSON.stringify(request), {
+        headers: await createToastHeaders({
+          ...error.details,
+          type: "error",
+        }),
+      });
+
+      return response;
+    }
+
+    response = new Response(JSON.stringify(request), {
+      headers: await createToastHeaders({
+        type: "error",
+        title: "Failed",
+        description: "Try again in a few minutes",
+      }),
+    });
+
+    return response;
   }
 };
