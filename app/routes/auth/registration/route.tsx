@@ -10,23 +10,23 @@ import {
 } from "@mantine/core";
 import { ActionFunctionArgs } from "@remix-run/node";
 import { Form, Link, useActionData } from "@remix-run/react";
-import { loginFormSchema, loginLabel } from "./constant";
 import { handleAction } from "./action";
+import { registrationLabel, schema } from "./constant";
 
 export const action = async ({ request }: ActionFunctionArgs) => {
   return await handleAction(request);
 };
 
-const Signin = () => {
+const Register = () => {
   const lastResult = useActionData<typeof action>();
 
   const [form, fields] = useForm({
     lastResult,
-    constraint: getZodConstraint(loginFormSchema),
+    constraint: getZodConstraint(schema),
     shouldValidate: "onBlur",
     shouldRevalidate: "onInput",
     onValidate({ formData }) {
-      return parseWithZod(formData, { schema: loginFormSchema });
+      return parseWithZod(formData, { schema: schema });
     },
   });
 
@@ -37,33 +37,33 @@ const Signin = () => {
           Farm Financial Planning
         </Title>
         <Title order={3} py={4}>
-          Sign-in here
+          Sign-up here
         </Title>
-        <Text c="dimmed" py={4} mb={30}>
-          Enter username & password for sign-in to ffp
-        </Text>
+        <Text c="dimmed" py={4} mb={30}></Text>
         <Form method="post" {...getFormProps(form)} className="space-y-4">
           <TextInput
-            {...loginLabel["username"]}
+            {...registrationLabel["username"]}
             {...getInputProps(fields.username, { type: "text" })}
             error={fields.username?.errors?.[0] ?? null}
           />
           <PasswordInput
-            {...loginLabel["password"]}
+            {...registrationLabel["password"]}
             {...getInputProps(fields.password, { type: "password" })}
             error={fields.password?.errors?.[0] ?? null}
+          />
+          <PasswordInput
+            {...registrationLabel["confirm_password"]}
+            {...getInputProps(fields.confirm_password, { type: "password" })}
+            error={fields.confirm_password?.errors?.[0] ?? null}
           />
           <Button type="submit" size="sm" fullWidth>
             Sign-in
           </Button>
           <Text className="text-xs w-full text-center">
-            Don&apos;t have an account yet ?
-            <Link
-              to="/auth/registration"
-              className="underline text-bill-blue-500"
-            >
+            Already has an account ?
+            <Link to="/auth" className="underline text-bill-blue-500">
               {" "}
-              Register now
+              Sign-in Now
             </Link>
           </Text>
         </Form>
@@ -72,4 +72,4 @@ const Signin = () => {
   );
 };
 
-export default Signin;
+export default Register;

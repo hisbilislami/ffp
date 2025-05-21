@@ -7,8 +7,8 @@ import { GiPlantWatering } from "react-icons/gi";
 
 const AuthenticationLayout = () => {
   return (
-    <div className="relative overflow-x-hidden overflow-y-hidden h-screen flex-col lg:items-center lg:justify-center md:grid lg:max-w-none lg:grid-cols-6 bg-bill-gray-100 p-4">
-      <div className="lg:p-4 lg:col-span-3 hidden lg:grid grid-cols-3 gap-3 bg-white h-[98%] rounded-xl">
+    <div className="relative overflow-x-hidden overflow-y-hidden h-screen bill-layout md:grid lg:max-w-none lg:grid-cols-6 bg-bill-orange-100 p-4">
+      <div className="lg:p-4 lg:col-span-3 hidden lg:grid grid-cols-3 gap-3 bg-white h-[97%] rounded-xl">
         <div className="col-span-1 flex flex-col gap-y-3">
           <div className="overflow-hidden h-[21%]">
             <Image
