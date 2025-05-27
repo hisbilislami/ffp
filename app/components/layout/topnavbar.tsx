@@ -3,16 +3,15 @@ import {
   ActionIcon,
   Avatar,
   Group,
-  Image,
   UnstyledButton,
-  Text,
   Menu,
+  TextInput,
 } from "@mantine/core";
 import { Form, Link } from "@remix-run/react";
 
 import { cn } from "~/utils/style";
 
-export function Topbar({
+export function Topnavbar({
   username = "",
   email,
 }: {
@@ -22,12 +21,32 @@ export function Topbar({
   return (
     <header
       className={cn(
-        "shadow-lg z-10 bg-tm-blue-600 py-3 px-[44px] w-full",
-        "flex justify-between items-center",
+        "z-10 bg-white py-3 px-[44px] w-[95%] shadow-sm",
+        "flex justify-between items-center rounded-2xl"
       )}
     >
-      <Group className="bg-white rounded-md px-4 py-2 shadow-md">
-        <Image src="/logo/e-sign-logo-full.svg" w={112} />
+      <Group className="py-2">
+        <TextInput
+          size="xs"
+          leftSection={
+            <Icon
+              icon="tabler:search"
+              className="w-4 h-4"
+              strokeWidth={5}
+            ></Icon>
+          }
+          placeholder="Cari di sini"
+          autoComplete="off"
+          classNames={{
+            root: "px-2",
+          }}
+          onKeyDown={() => {}}
+          variant="filled"
+          radius="lg"
+          aria-label="pencarian"
+          name="s"
+          ref={() => {}} // Attach ref to the input field
+        />
       </Group>
 
       <div className="flex gap-3">
@@ -52,17 +71,8 @@ export function Topbar({
                   variant="gradient"
                 >
                   {username[0].toUpperCase()}
+                  {email}
                 </Avatar>
-
-                <div className="flex-1 w-32">
-                  <Text size="sm" fw={600}>
-                    {username}{" "}
-                  </Text>
-
-                  <Text c="dimmed" size="xs" className="text-ellipsis">
-                    {email}
-                  </Text>
-                </div>
               </Group>
             </UnstyledButton>
           </Menu.Target>

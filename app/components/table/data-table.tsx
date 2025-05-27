@@ -5,12 +5,13 @@ import {
   CSSProperties,
   Flex,
   Paper,
+  Popover,
   Table,
   TableProps,
   Text,
   TextInput,
 } from "@mantine/core";
-import { IconEdit, IconSearch, IconTrash } from "@tabler/icons-react";
+import { IconEdit, IconSearch, IconTrash, IconX } from "@tabler/icons-react";
 import {
   Column,
   ColumnDef,
@@ -18,7 +19,7 @@ import {
   Table as TableType,
 } from "@tanstack/react-table";
 import clsx from "clsx";
-import { useRef } from "react";
+import { ComponentType, useRef, useState } from "react";
 
 interface DataTableProps<TData, TValue> extends TableProps {
   table: TableType<TData>;
@@ -32,10 +33,12 @@ interface DataTableProps<TData, TValue> extends TableProps {
   withSearchField?: boolean;
   onSearch?: (search: string) => void;
   onFilter?: () => void;
+  onFilterReset?: () => void;
+  FilterComponent?: ComponentType<unknown>;
   textName?: string;
 }
 
-const getCommonPinningStyles = (column: Column<any>): CSSProperties => {
+const getCommonPinningStyles = (column: Column<unknown>): CSSProperties => {
   const isPinned = column.getIsPinned();
   const isLastLeftPinnedColumn =
     isPinned === "left" && column.getIsLastColumn("left");
@@ -47,8 +50,8 @@ const getCommonPinningStyles = (column: Column<any>): CSSProperties => {
     boxShadow: isLastLeftPinnedColumn
       ? "-4px 0 4px -4px gray inset"
       : isFirstRightPinnedColumn
-        ? "4px 0 4px -4px gray inset"
-        : undefined,
+      ? "4px 0 4px -4px gray inset"
+      : undefined,
     // left: isPinned === "left" ? `${column.getStart("left")}px` : undefined,
     // NOTE: Temporary calculation, should calculate the with of the column to get the offset precisely
     left: isPinned === "left" ? `${36 * columnIndexFromLeft}px` : undefined,
@@ -76,6 +79,8 @@ export function DataTable<TData, TValue>({
   onRefresh,
   onSearch,
   onFilter,
+  onFilterReset,
+  FilterComponent,
   withSearchField,
   textName = "ID",
   ...props
@@ -85,7 +90,7 @@ export function DataTable<TData, TValue>({
 }) {
   const searchRef = useRef<HTMLInputElement>(null);
   const searchFieldHandling = (
-    event: React.KeyboardEvent<HTMLInputElement>,
+    event: React.KeyboardEvent<HTMLInputElement>
   ) => {
     if (event.key === "Enter") {
       event.preventDefault();
@@ -99,6 +104,8 @@ export function DataTable<TData, TValue>({
     }
     onRefresh?.();
   };
+
+  const [filterOpened, setFilterOpened] = useState(false);
 
   const searchIcon = <IconSearch size={16} stroke={1.5} />;
   return (
@@ -154,23 +161,89 @@ export function DataTable<TData, TValue>({
               />
             </>
           ) : null}
-          {withFilter && onFilter ? (
+          {withFilter && onFilter && onFilterReset ? (
             <>
-              <Button
-                size="xs"
-                leftSection={
-                  <Icon
-                    icon="tabler:filter"
-                    className="w-3 h-3 font-semibold"
-                  />
-                }
-                variant="default"
-                onClick={() => onFilter()}
+              <Popover
+                opened={filterOpened}
+                width={350}
+                radius={10}
+                position="bottom"
+                trapFocus
+                clickOutsideEvents={["mouseup", "touchend"]}
+                shadow="md"
+                offset={{ mainAxis: 5, crossAxis: -135 }}
               >
-                <Text fw={300} size="xs">
-                  Filter
-                </Text>
-              </Button>
+                <Popover.Target>
+                  <Button
+                    size="xs"
+                    leftSection={
+                      <Icon
+                        icon="tabler:filter"
+                        className="w-3 h-3 font-semibold"
+                      />
+                    }
+                    variant="default"
+                    onClick={() => setFilterOpened((o) => !o)}
+                  >
+                    <Text fw={300} size="xs">
+                      Filter
+                    </Text>
+                  </Button>
+                </Popover.Target>
+                <Popover.Dropdown className="p-0 border-0">
+                  <div className="filter-header bg-tm-gray-100 p-2 items-center rounded-t-[10px] border-b-tm-gray-300 border-[1px] border-t-0 border-r-0 border-l-0 px-6 inline-flex w-full justify-between">
+                    <Text className="font-medium">Filter</Text>
+                    <Button
+                      bg="transparent"
+                      onClick={() => {
+                        setFilterOpened(false);
+                        onFilterReset();
+                      }}
+                      className="p-0 m-0"
+                      size="xs"
+                    >
+                      <IconX color="black"></IconX>
+                    </Button>
+                  </div>
+                  <div className="py-4 px-6">
+                    {FilterComponent ? <FilterComponent /> : null}
+                  </div>
+                  <div className="filter-footer p-4 items-center rounded-b-[10px] border-t-tm-gray-300 border-[1px] border-b-0 border-r-0 border-l-0 px-6 inline-flex w-full justify-around">
+                    <Button
+                      size="sm"
+                      leftSection={
+                        <Icon
+                          icon="tabler:x"
+                          className="text-tm-dark-800 text-xl font-bold"
+                        />
+                      }
+                      className="border-tm-gray-400"
+                      variant="outline"
+                      type="button"
+                      onClick={() => onFilterReset()}
+                    >
+                      <Text fw={300} size="sm" className="text-tm-dark-800">
+                        Atur Ulang
+                      </Text>
+                    </Button>
+                    <Button
+                      size="sm"
+                      leftSection={
+                        <Icon
+                          icon="tabler:filter"
+                          className="text-xl font-bold"
+                        />
+                      }
+                      variant="filled"
+                      onClick={() => onFilter()}
+                    >
+                      <Text fw={300} size="sm">
+                        Terapkan
+                      </Text>
+                    </Button>
+                  </div>
+                </Popover.Dropdown>
+              </Popover>
             </>
           ) : null}
         </div>
@@ -228,7 +301,9 @@ export function DataTable<TData, TValue>({
                       key={header.id}
                       className="text-sm font-semibold leading-none p-2 text-ihcGrey-700"
                       style={{
-                        ...getCommonPinningStyles(column),
+                        ...getCommonPinningStyles(
+                          column as Column<unknown, unknown>
+                        ),
                         width: column.getSize(),
                       }}
                     >
@@ -236,7 +311,7 @@ export function DataTable<TData, TValue>({
                         ? null
                         : flexRender(
                             header.column.columnDef.header,
-                            header.getContext(),
+                            header.getContext()
                           )}
                     </Table.Th>
                   );
@@ -321,7 +396,9 @@ export function DataTable<TData, TValue>({
                         key={cell.id}
                         className="text-sm leading-none text-black"
                         style={{
-                          ...getCommonPinningStyles(column),
+                          ...getCommonPinningStyles(
+                            column as Column<unknown, unknown>
+                          ),
                           width: column.getSize(),
                         }}
                         onClick={(e) =>
@@ -330,7 +407,7 @@ export function DataTable<TData, TValue>({
                       >
                         {flexRender(
                           cell.column.columnDef.cell,
-                          cell.getContext(),
+                          cell.getContext()
                         )}
                       </Table.Td>
                     );

@@ -16,20 +16,19 @@ function AppCardForm({
   isForm = false,
   actionButtons,
   ctButtonClassName,
-  borderTop = false,
 }: AppCardFormProps) {
   return (
-    <div className="h-full w-full px-5 py-5">
-      <div
-        className={`bg-tm-gray-100 rounded-t-xl py-2 px-11 w-full ${borderTop ? "border border-t-gray-200" : null}`}
-      >
-        <Text className="text-black text-md" fw={600}>
-          {title}
-        </Text>
-      </div>
+    <div className="h-full w-full px-5 py-5 rounded-2xl">
       <Card
-        className={`flex flex-col gap-6 w-full bg-white rounded-b-xl rounded-t-none ${!borderTop ? "border border-t-gray-200" : "border border-t-none border-l-gray-200 border-r-gray-200 border-b-gray-200"} border-white p-0`}
+        className={`flex flex-col gap-6 w-full bg-white rounded-2xl p-0 shadow-sm`}
+        radius="lg"
+        shadow="sm"
       >
+        <div className={`px-5 py-2 w-full`}>
+          <Text className="text-black text-2xl capitalize" size="xl" fw={600}>
+            {title}
+          </Text>
+        </div>
         {isForm ? (
           <>
             {children}

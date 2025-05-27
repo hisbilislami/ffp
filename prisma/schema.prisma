@@ -12,7 +12,6 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
-
 }
 
 model Users {
@@ -22,6 +21,38 @@ model Users {
   createdAt DateTime  @default(now()) @map("created_at")
   updatedAt DateTime  @updatedAt @map("updated_at")
   deletedAt DateTime? @map("deleted_at")
+  Budgets   Budgets[]
 
   @@map("m_users")
+}
+
+model Budgets {
+  id           Int            @id @default(autoincrement())
+  name         String         @db.VarChar(255)
+  periodStart  DateTime       @map("period_start")
+  periodEnd    DateTime       @map("period_end")
+  user         Users          @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  userId       Int            @map("user_id")
+  createdAt    DateTime       @default(now()) @map("created_at")
+  updatedAt    DateTime       @updatedAt @map("updated_at")
+  deletedAt    DateTime?      @map("deleted_at")
+  Transactions Transactions[]
+
+  @@map("t_budgets")
+}
+
+model Transactions {
+  id            Int       @id @default(autoincrement())
+  budget        Budgets   @relation(fields: [budgetId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  budgetId      Int       @map("budget_id")
+  estimatePrice Decimal   @map("estimate_price")
+  realPrice     Decimal   @map("real_price")
+  diffPrice     Decimal?  @map("diff_price")
+  qty           Int
+  description   String?
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+  deletedAt     DateTime? @map("deleted_at")
+
+  @@map("t_transactions")
 }

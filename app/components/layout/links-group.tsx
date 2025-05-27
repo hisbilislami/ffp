@@ -12,14 +12,14 @@ import { useState } from "react";
 
 import { cn } from "~/utils/style";
 
-import { AppPageMenu, AppSubmoduleMenu } from "./types";
+import { AppModuleMenu, AppPageMenu } from "./types";
 
 type LinksGroupProps = {
-  module: Omit<AppSubmoduleMenu, "pages">;
+  menu: Omit<AppModuleMenu, "pages">;
   child: AppPageMenu[];
 };
 
-export function LinksGroup({ module, child }: LinksGroupProps) {
+export function LinksGroup({ menu, child }: LinksGroupProps) {
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -31,9 +31,23 @@ export function LinksGroup({ module, child }: LinksGroupProps) {
     return location.pathname === link && location.pathname.includes(link);
   }
 
+  function isPathnameInclude(link: string) {
+    if (!link) return false;
+
+    const firstTwoSegments = link
+      .split("/")
+      .filter(Boolean) // remove empty strings
+      .slice(0, 2) // take the first two segments
+      .join("/");
+
+    const normalizedLink = `/${firstTwoSegments}`;
+
+    return location.pathname.startsWith(normalizedLink);
+  }
+
   function onClickParentMenu() {
-    module?.path && child.length === 0
-      ? navigate(module.path)
+    menu?.path && child.length === 0
+      ? navigate(menu.path)
       : setOpened((o) => !o);
   }
   const items = (hasLinks ? child : []).map((link, idx) => (
@@ -49,7 +63,7 @@ export function LinksGroup({ module, child }: LinksGroupProps) {
             : "hover:!bg-[var(--mantine-color-gray-2)]",
           isPathnameMatch(link.path)
             ? "!border-l !border-solid !border-[var(--mantine-color-tmBlue-6)]"
-            : "",
+            : ""
         )}
       >
         <Box style={{ display: "flex", alignItems: "center" }}>
@@ -77,31 +91,43 @@ export function LinksGroup({ module, child }: LinksGroupProps) {
       <UnstyledButton
         onClick={onClickParentMenu}
         className={cn(
-          "w-full font-medium block no-underline !px-4 !py-[0.625rem] text-sm text-[var(--mantine-color-text)] rounded",
+          "w-full font-semibold block no-underline !px-4 !py-[0.625rem] text-sm text-[var(--mantine-color-text)] rounded-l",
           "hover:!text-[var(--mantine-color-black)]",
-          isPathnameMatch(module?.path)
-            ? "!text-[var(--mantine-color-tmBlue-6)] !bg-[var(--mantine-color-gray-2)]"
-            : "hover:!bg-[var(--mantine-color-gray-2)]",
+          isPathnameInclude(menu?.path)
+            ? "!text-bill-orange-500 !bg-bill-orange-50"
+            : "hover:!bg-bill-orange-50 "
         )}
+        style={
+          isPathnameInclude(menu?.path)
+            ? { borderRight: "3px solid #F77E3D" }
+            : undefined
+        }
       >
         <Group justify="space-between" gap={0}>
           <Box style={{ display: "flex", alignItems: "center" }}>
-            <ThemeIcon variant="light" size={30}>
+            <ThemeIcon variant="transparent" size={30}>
               <Icon
-                icon={`tabler:${module?.icon || "help-square-rounded"}`}
-                style={{ width: rem(18), height: rem(18) }}
+                icon={`${menu?.icon || "help-square-rounded"}`}
+                style={{ width: rem(20), height: rem(20) }}
+                className={`${
+                  isPathnameInclude(menu.path)
+                    ? "!text-bill-orange-500"
+                    : "!text-[var(--mantine-color-text)]"
+                }`}
               />
             </ThemeIcon>
-            <Box ml="md">{module?.label}</Box>
+            <Box ml="md" className="uppercase">
+              {menu?.label}
+            </Box>
           </Box>
           {hasLinks ? (
             <Icon
               icon="tabler:chevron-right"
               className={cn(
                 "transition-transform duration-200",
-                "w-4 h-4",
+                "w-6 h-6",
                 opened ? "rotate-90" : "rotate-0",
-                "stroke-[1.5]",
+                "stroke-[1.5]"
               )}
             />
           ) : null}

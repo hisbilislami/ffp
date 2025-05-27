@@ -8,14 +8,20 @@ import {
   TextInput,
   Title,
 } from "@mantine/core";
-import { ActionFunctionArgs } from "@remix-run/node";
+import { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
 import { Form, Link, useActionData } from "@remix-run/react";
 import { loginFormSchema, loginLabel } from "./constant";
 import { handleAction } from "./action";
+import { requireAnonymous } from "~/utils/auth.server";
 
 export const action = async ({ request }: ActionFunctionArgs) => {
   return await handleAction(request);
 };
+
+export async function loader({ request }: LoaderFunctionArgs) {
+  await requireAnonymous(request);
+  return {};
+}
 
 const Signin = () => {
   const lastResult = useActionData<typeof action>();
