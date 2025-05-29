@@ -262,17 +262,6 @@ export function DataTable<TData, TValue>({
           <Table.Thead>
             {table.getHeaderGroups().map((headerGroup) => (
               <Table.Tr key={headerGroup.id}>
-                {withAction ? (
-                  <Table.Th
-                    className="text-sm font-semibold leading-none p-2 text-ihcGrey-700"
-                    style={{
-                      width: "1%", // Shrinks to fit content
-                      whiteSpace: "nowrap", // Prevents unnecessary wrapping
-                    }}
-                  >
-                    Aksi
-                  </Table.Th>
-                ) : null}
                 {headerGroup.headers.map((header) => {
                   // START HEAD CHECKBOX ---------------------------------------------
                   const { column } = header;
@@ -316,6 +305,18 @@ export function DataTable<TData, TValue>({
                     </Table.Th>
                   );
                 })}
+
+                {withAction ? (
+                  <Table.Th
+                    className="text-sm font-semibold leading-none p-2 text-ihcGrey-700"
+                    style={{
+                      width: "1%", // Shrinks to fit content
+                      whiteSpace: "nowrap", // Prevents unnecessary wrapping
+                    }}
+                  >
+                    Action
+                  </Table.Th>
+                ) : null}
               </Table.Tr>
             ))}
           </Table.Thead>
@@ -339,38 +340,6 @@ export function DataTable<TData, TValue>({
                   })}
                   onClick={() => onTrClick && onTrClick(row.original)}
                 >
-                  {withAction ? (
-                    <Table.Td
-                      className="text-sm leading-none text-black"
-                      style={{
-                        width: "1%", // Shrinks to fit content
-                        whiteSpace: "nowrap", // Prevents unnecessary wrapping
-                      }}
-                    >
-                      {onEdit ? (
-                        <ActionIcon
-                          variant="subtle"
-                          color="tmDark.8"
-                          size="md"
-                          aria-label="Edit"
-                          onClick={() => onEdit(row.original)}
-                        >
-                          <IconEdit />
-                        </ActionIcon>
-                      ) : null}
-                      {onDelete ? (
-                        <ActionIcon
-                          variant="subtle"
-                          color="tmDark.8"
-                          size="md"
-                          aria-label="Delete"
-                          onClick={() => onDelete(row.original)}
-                        >
-                          <IconTrash />
-                        </ActionIcon>
-                      ) : null}
-                    </Table.Td>
-                  ) : null}
                   {row.getVisibleCells().map((cell) => {
                     // START ROW CHECKBOX  ---------------------------------------------
                     const { column } = cell;
@@ -412,6 +381,39 @@ export function DataTable<TData, TValue>({
                       </Table.Td>
                     );
                   })}
+
+                  {withAction ? (
+                    <Table.Td
+                      className="text-sm leading-none text-black"
+                      style={{
+                        width: "1%", // Shrinks to fit content
+                        whiteSpace: "nowrap", // Prevents unnecessary wrapping
+                      }}
+                    >
+                      {onEdit ? (
+                        <ActionIcon
+                          variant="subtle"
+                          color="tmDark.8"
+                          size="md"
+                          aria-label="Edit"
+                          onClick={() => onEdit(row.original)}
+                        >
+                          <IconEdit />
+                        </ActionIcon>
+                      ) : null}
+                      {onDelete ? (
+                        <ActionIcon
+                          variant="subtle"
+                          color="tmDark.8"
+                          size="md"
+                          aria-label="Delete"
+                          onClick={() => onDelete(row.original)}
+                        >
+                          <IconTrash />
+                        </ActionIcon>
+                      ) : null}
+                    </Table.Td>
+                  ) : null}
                 </Table.Tr>
               ))
             ) : (

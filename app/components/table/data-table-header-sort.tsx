@@ -14,7 +14,7 @@ interface DataTableColumnHeaderProps<TData, TValue>
 function generateSortParams<TData, TValue>(
   searchParams: URLSearchParams,
   column: Column<TData, TValue>,
-  isAsc: boolean,
+  isAsc: boolean
 ) {
   const sort = searchParams.get("sort");
   const key = column.id;
