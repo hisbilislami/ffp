@@ -11,7 +11,6 @@ import {
 import type { LinksFunction, LoaderFunctionArgs } from "@remix-run/node";
 
 import "./tailwind.css";
-import "@mantine/core/styles.css";
 import {
   ColorSchemeScript,
   mantineHtmlProps,
@@ -21,6 +20,7 @@ import {
 import "@mantine/nprogress/styles.css";
 import "@mantine/notifications/styles.css";
 import "@mantine/core/styles.css";
+import "@mantine/dates/styles.css";
 import { getDialog } from "./utils/dialog.server";
 import { combineHeaders } from "./utils/http";
 import { DialogProvider, useDialog } from "./context/DialogContext";

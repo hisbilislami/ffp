@@ -123,7 +123,7 @@ export function DataTable<TData, TValue>({
               onClick={() => onAdd()}
             >
               <Text fw={300} size="xs">
-                Tambah {textName}
+                Add {textName}
               </Text>
             </Button>
           </div>
