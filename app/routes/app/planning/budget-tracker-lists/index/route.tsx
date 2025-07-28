@@ -12,7 +12,7 @@ import {
 import AppCardForm from "~/components/card/app-card-form";
 import { useMemo, useState } from "react";
 import { DataTable, useDataTable } from "~/components/table";
-import { columns } from "./columns";
+import { columns, ListBudgetTracker } from "./columns";
 import { loaderHandler } from "./loader";
 import { actionHandler } from "./action";
 import { useDisclosure } from "@mantine/hooks";
@@ -44,7 +44,7 @@ export default function BudgetTrackerLists() {
 
   const [searchParams] = useSearchParams();
   const page = useMemo(() => searchParams.get("page") || 0, [searchParams]);
-  const size = useMemo(() => searchParams.get("size") || 0, [searchParams]);
+  const size = useMemo(() => searchParams.get("size") || 10, [searchParams]);
 
   const fetcher = useFetcher<typeof action>();
   const lastResult = useActionData<typeof action>();
@@ -113,6 +113,16 @@ export default function BudgetTrackerLists() {
     }
   };
 
+  const onEdit = (data: ListBudgetTracker) => {
+    fetcher.submit(
+      {
+        id: data.id,
+        action: "update",
+      },
+      { method: "POST", action: "/app/planning/budget-tracker-lists" }
+    );
+  };
+
   return (
     <>
       <AppCardForm isForm={false} title="Budget Tracker">
@@ -124,6 +134,8 @@ export default function BudgetTrackerLists() {
             setIgnoreLoading(true);
             open();
           }}
+          onEdit={onEdit}
+          onDelete={() => {}}
           onSearch={onSearch}
           textName="Budget Tracker"
           withSearchField={true}
