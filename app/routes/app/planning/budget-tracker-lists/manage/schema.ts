@@ -58,7 +58,7 @@ export const schema = z.object({
     .refine((val) => val >= 0, {
       message: "Amount must be possitive",
     }),
-  diffPrice: z.string().optional(),
+  diff_price: z.string().optional(),
   qty: z.number().min(1),
   description: z.string().optional(),
 });

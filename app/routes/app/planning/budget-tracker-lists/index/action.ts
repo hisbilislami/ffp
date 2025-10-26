@@ -7,6 +7,7 @@ import { BadRequestError } from "~/utils/error.server";
 import { formSessionStorage } from "~/utils/session.server";
 import { schema } from "./schema";
 import { Prisma } from "@prisma/client";
+import { createToastHeaders } from "~/utils/toast.server";
 
 export const actionHandler = async (request: ActionFunctionArgs["request"]) => {
   try {
@@ -15,6 +16,7 @@ export const actionHandler = async (request: ActionFunctionArgs["request"]) => {
     const formData = await request.formData();
 
     const action = formData.get("action");
+
     let id: FormDataEntryValue | number | null | undefined = null;
 
     if (action === "delete") {
@@ -49,17 +51,22 @@ export const actionHandler = async (request: ActionFunctionArgs["request"]) => {
           },
         });
       });
-      return redirect("/app/planning/budget-tracker-list");
+      return new Response(JSON.stringify(request), {
+        headers: await createToastHeaders({
+          type: "success",
+          title: "Delete success",
+          description: "Your data deleted successfully.",
+        }),
+      });
     }
 
     const session = await formSessionStorage.getSession();
 
-    if (action === "edit" || action === "new") {
+    if (action === "new") {
       const submission = parseWithZod(formData, { schema: schema });
       if (submission.status !== "success") {
         return submission.reply();
       }
-
       const periods = submission.value.period;
       const periodStart = periods[0];
       const periodEnd = periods[1];
@@ -85,33 +92,22 @@ export const actionHandler = async (request: ActionFunctionArgs["request"]) => {
 
         session.set("id_budget", id);
       }
+    }
 
-      if (action === "edit") {
-        id = submission.value.id;
-        const budget = await prisma.budgets.findFirst({
-          where: { id: Number(id) },
-        });
+    if (action === "edit") {
+      id = formData.get("id");
+      const budget = await prisma.budgets.findFirst({
+        where: { id: Number(id) },
+      });
 
-        if (!budget) {
-          throw new BadRequestError("Bad Request", {
-            title: "Failed",
-            description: "Data not found.",
-          });
-        }
-
-        await prisma.budgets.update({
-          where: { id: Number(id) },
-          data: data as Prisma.BudgetsUpdateInput,
-        });
-
-        return new Response(JSON.stringify(budget.id), {
-          headers: await createDialogHeaders({
-            type: "success",
-            title: "Update Success",
-            description: "Data updated successfully",
-          }),
+      if (!budget) {
+        throw new BadRequestError("Bad Request", {
+          title: "Failed",
+          description: "Data not found.",
         });
       }
+
+      session.set("id_budget", id);
     }
 
     return redirect("/app/planning/budget-tracker-lists/manage", {

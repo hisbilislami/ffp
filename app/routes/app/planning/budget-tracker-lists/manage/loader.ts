@@ -18,15 +18,33 @@ export const loaderHandler = async (request: LoaderFunctionArgs["request"]) => {
       id = null;
     }
 
-    const transaction = await prisma.budgets.findFirst({
-      where: { id: Number(id) },
+    const budgets = await prisma.budgets.findFirst({
+      where: { id: Number(id), deletedAt: null },
       include: {
-        Transactions: true,
+        Transactions: {
+          where: {
+            deletedAt: null,
+          },
+        },
       },
     });
 
+    let cleanData = null;
+
+    if (budgets) {
+      cleanData = {
+        ...budgets,
+        Transactions: budgets.Transactions.map((tx) => ({
+          ...tx,
+          estimatePrice: tx.estimatePrice.toNumber(),
+          realPrice: tx.realPrice.toNumber(),
+          diffPrice: tx.diffPrice ? tx.diffPrice.toNumber() : null,
+        })),
+      };
+    }
+
     return data({
-      data: transaction ?? null,
+      data: cleanData,
       status: "success",
     });
   } catch (error) {

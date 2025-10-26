@@ -26,6 +26,7 @@ import {
 import { getZodConstraint, parseWithZod } from "@conform-to/zod";
 import { btlLabel, schema } from "./schema";
 import { DatePickerInput } from "@mantine/dates";
+import { useDialog } from "~/context/DialogContext";
 
 export const action = async ({ request }: ActionFunctionArgs) =>
   actionHandler(request);
@@ -48,6 +49,8 @@ export default function BudgetTrackerLists() {
 
   const fetcher = useFetcher<typeof action>();
   const lastResult = useActionData<typeof action>();
+
+  const { showDialog } = useDialog();
 
   const { table } = useDataTable({
     columns: columns,
@@ -117,10 +120,28 @@ export default function BudgetTrackerLists() {
     fetcher.submit(
       {
         id: data.id,
-        action: "update",
+        action: "edit",
       },
       { method: "POST", action: "/app/planning/budget-tracker-lists" }
     );
+  };
+
+  const onDelete = (data: ListBudgetTracker) => {
+    showDialog({
+      title: "Hapus",
+      description: "Apakah anda yakin ingin menghapus data ini?",
+      type: "confirmation",
+      onConfirm: () => {
+        fetcher.submit(
+          {
+            id: data.id,
+            action: "delete",
+          },
+          { method: "POST", action: "/app/planning/budget-tracker-lists" }
+        );
+      },
+      confirmText: "Ya",
+    });
   };
 
   return (
@@ -135,7 +156,7 @@ export default function BudgetTrackerLists() {
             open();
           }}
           onEdit={onEdit}
-          onDelete={() => {}}
+          onDelete={onDelete}
           onSearch={onSearch}
           textName="Budget Tracker"
           withSearchField={true}

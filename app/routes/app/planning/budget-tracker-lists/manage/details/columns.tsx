@@ -32,7 +32,7 @@ export const columns: ColumnDef<ListTransaction>[] = [
   },
   {
     header: "Description",
-    accessorKey: "estimatePrice",
+    accessorKey: "description",
     size: 80,
   },
 ];

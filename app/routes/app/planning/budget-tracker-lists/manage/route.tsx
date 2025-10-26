@@ -6,23 +6,32 @@ import {
   useActionData,
   useLoaderData,
   useNavigate,
+  // useNavigate,
   useNavigation,
 } from "@remix-run/react";
-import { getFormProps, getInputProps, useForm } from "@conform-to/react";
+import {
+  getFormProps,
+  getInputProps,
+  useForm,
+  useInputControl,
+} from "@conform-to/react";
 import { getZodConstraint, parseWithZod } from "@conform-to/zod";
 import { budgetTrackerLabel, schema } from "./schema";
-import { Button, Grid, Textarea } from "@mantine/core";
+import { Button, Grid, Textarea, TextInput } from "@mantine/core";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import InputText from "~/components/form/input-text";
-import { DataTable, useDataTable } from "~/components/table";
-import { columns } from "./columns";
+import { BudgetTrackerDetails } from "./details/route";
+import { actionHanlder } from "./action";
+import { ListTransaction } from "./details/columns";
+import { useEffect, useState } from "react";
+import InputNumber from "~/components/form/input-number";
 
 export const loader = ({ request }: LoaderFunctionArgs) => {
   return loaderHandler(request);
 };
 
 export const action = ({ request }: ActionFunctionArgs) => {
-  return null;
+  return actionHanlder(request);
 };
 
 export const ErrorBoundary = () => {};
@@ -31,7 +40,21 @@ const BudgetTrackerForm = () => {
   const { data } = useLoaderData<typeof loader>();
   const lastResult = useActionData<typeof action>();
 
-  const transaction = data;
+  const [selectedData, setSelectedData] = useState<ListTransaction | undefined>(
+    undefined
+  );
+
+  useEffect(() => {
+    if (selectedData) {
+      id.change(String(selectedData.id));
+      estimatePrice.change(String(selectedData.estimatePrice));
+      realPrice.change(String(selectedData.realPrice));
+      diffPrice.change(String(selectedData.diffPrice));
+      qty.change(String(selectedData.qty));
+      description.change(String(selectedData.description));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedData]);
 
   const navigation = useNavigation();
   const navigate = useNavigate();
@@ -42,18 +65,20 @@ const BudgetTrackerForm = () => {
     shouldValidate: "onBlur",
     shouldRevalidate: "onInput",
     onValidate({ formData }) {
-      return parseWithZod(formData, { schema });
+      const isValid = parseWithZod(formData, { schema });
+      return isValid;
     },
-    defaultValue: {},
+    defaultValue: {
+      budgetId: data?.id ?? undefined,
+    },
   });
 
-  const transactionList = transaction?.Transactions;
-
-  const { table } = useDataTable({
-    columns: columns,
-    data: transactionList || [],
-    count: transactionList,
-  });
+  const id = useInputControl(fields.id);
+  const estimatePrice = useInputControl(fields.estimate_price);
+  const realPrice = useInputControl(fields.real_price);
+  const diffPrice = useInputControl(fields.diff_price);
+  const qty = useInputControl(fields.qty);
+  const description = useInputControl(fields.description);
 
   return (
     <>
@@ -62,52 +87,111 @@ const BudgetTrackerForm = () => {
           isForm={true}
           title="Budget Tracker"
           actionButtons={
-            <div className="flex gap-4 justify-right">
-              <Button
-                type="reset"
-                leftSection={<Icon icon="streamline-plump:reset-clock-solid" />}
-                variant="default"
-              >
-                Reset
-              </Button>
-              <Button
-                type="submit"
-                leftSection={
-                  <Icon icon="material-symbols:save-clock-rounded" />
-                }
-              >
-                Submit
-              </Button>
+            <div className="flex gap-4 justify-between w-full">
+              <div>
+                <Button
+                  type="button"
+                  size="xs"
+                  leftSection={
+                    <Icon icon="tabler:arrow-back-up" className="h-5 w-5" />
+                  }
+                  variant="filled"
+                  color="billYellow"
+                  onClick={() =>
+                    navigate("/app/planning/budget-tracker-lists/")
+                  }
+                  loading={navigation.state !== "idle"}
+                >
+                  Back to the main list
+                </Button>
+              </div>
+
+              <div className="inline-flex gap-2">
+                <Button
+                  type="button"
+                  onClick={() => {
+                    estimatePrice.change(undefined);
+                    realPrice.change(undefined);
+                    diffPrice.change(undefined);
+                    qty.change(undefined);
+                    description.change(undefined);
+                    id.change(undefined);
+                  }}
+                  leftSection={
+                    <Icon icon="streamline-plump:reset-clock-solid" />
+                  }
+                  loading={navigation.state !== "idle"}
+                  variant="default"
+                >
+                  Reset
+                </Button>
+                <Button
+                  type="submit"
+                  loading={navigation.state !== "idle"}
+                  leftSection={
+                    <Icon icon="material-symbols:save-clock-rounded" />
+                  }
+                >
+                  Submit
+                </Button>
+              </div>
             </div>
           }
         >
           <Grid>
             <Grid.Col span={6}>
+              <input {...getInputProps(fields.budgetId, { type: "hidden" })} />
+              <input {...getInputProps(fields.id, { type: "hidden" })} />
+              <input
+                {...getInputProps(fields.diff_price, { type: "hidden" })}
+              />
               <InputText
                 {...budgetTrackerLabel["estimate_price"]}
                 fields={fields}
+                onChange={(v) => estimatePrice.change(v.currentTarget.value)}
+                className="mb-1"
+                onBlur={(e) => {
+                  const val = e.currentTarget.value;
+                  if (val && realPrice.value) {
+                    const diff = Number(val) - Number(realPrice.value);
+                    diffPrice.change(String(diff));
+                  }
+                }}
               />
               <InputText
                 {...budgetTrackerLabel["real_price"]}
                 fields={fields}
+                className="my-1"
+                onBlur={(e) => {
+                  const val = e.currentTarget.value;
+                  if (val && estimatePrice.value) {
+                    const diff = Number(estimatePrice.value) - Number(val);
+                    diffPrice.change(String(diff));
+                  }
+                }}
               />
-              <InputText
+              <TextInput
+                className="my-1"
+                value={diffPrice.value || 0}
                 {...budgetTrackerLabel["diff_price"]}
-                fields={fields}
+                disabled
               />
             </Grid.Col>
             <Grid.Col span={6}>
-              <InputText {...budgetTrackerLabel["qty"]} fields={fields} />
               <Textarea
                 rows={4}
                 {...budgetTrackerLabel["description"]}
                 {...getInputProps(fields.description, { type: "text" })}
               />
+              <InputNumber {...budgetTrackerLabel["qty"]} fields={fields} />
             </Grid.Col>
           </Grid>
         </AppCardForm>
         <AppCardForm isForm={false} title="Budget Tracker List">
-          <DataTable table={table} />
+          <BudgetTrackerDetails
+            data={data?.Transactions as ListTransaction[]}
+            setSelectedData={setSelectedData}
+          />{" "}
         </AppCardForm>
       </Form>
     </>

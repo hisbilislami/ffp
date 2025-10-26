@@ -1,10 +1,11 @@
 import { ColumnDef } from "@tanstack/react-table";
+import { convertDateStringToString } from "~/utils/date";
 
 export interface ListBudgetTracker {
   id: number;
   name: string;
-  period_start: string;
-  period_end: string;
+  periodStart: string;
+  periodEnd: string;
 }
 
 export const columns: ColumnDef<ListBudgetTracker>[] = [
@@ -17,8 +18,12 @@ export const columns: ColumnDef<ListBudgetTracker>[] = [
     header: "Period",
     accessorKey: "periode_start",
     cell: ({ row }) => {
-      const periodStart = row.original.period_start;
-      const periodEnd = row.original.period_end;
+      const periodStart = convertDateStringToString({
+        date: row.original.periodStart,
+      });
+      const periodEnd = convertDateStringToString({
+        date: row.original.periodEnd,
+      });
 
       return (
         <span>
