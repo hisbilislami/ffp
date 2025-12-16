@@ -48,7 +48,7 @@ export function Sidebar() {
   return (
     <nav
       className={cn(
-        "w-full flex h-full bg-white",
+        "w-full hidden md:flex h-full bg-white",
         "border-r border-[var(--mantine-color-gray-3)]",
         "w-80"
       )}

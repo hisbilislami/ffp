@@ -2,10 +2,12 @@ import { Icon } from "@iconify/react/dist/iconify.js";
 import {
   ActionIcon,
   Button,
+  Card,
   CSSProperties,
   Flex,
   Paper,
   Popover,
+  ScrollArea,
   Table,
   TableProps,
   Text,
@@ -18,7 +20,7 @@ import {
   flexRender,
   Table as TableType,
 } from "@tanstack/react-table";
-import clsx from "clsx";
+import { clsx } from "clsx";
 import { ComponentType, useRef, useState } from "react";
 
 interface DataTableProps<TData, TValue> extends TableProps {
@@ -107,328 +109,605 @@ export function DataTable<TData, TValue>({
 
   const [filterOpened, setFilterOpened] = useState(false);
 
+  const [showOtherMobileButton, setShowOtherMobileButton] =
+    useState<boolean>(false);
+
   const searchIcon = <IconSearch size={16} stroke={1.5} />;
   return (
-    <Table.ScrollContainer minWidth={500}>
-      <Flex className="mb-2" justify="space-between">
-        {/* ADD BUTTON */}
-        {withAction && onAdd ? (
-          <div className="w-full sm:w-[50%]">
-            <Button
-              size="xs"
-              leftSection={
-                <Icon icon="tabler:plus" className="w-3 h-3 font-semibold" />
-              }
-              variant="filled"
-              onClick={() => onAdd()}
-            >
-              <Text fw={300} size="xs">
-                Add {textName}
-              </Text>
-            </Button>
-          </div>
-        ) : (
-          <div className="w-full sm:w-[50%]">&nbsp;</div>
-        )}
+    <>
+      {/* for mobile */}
 
-        <div className="w-full sm:w-[50%] gap-2 flex justify-end items-center">
-          {withSearchField && onRefresh ? (
-            <>
+      <ScrollArea className="block md:hidden">
+        <Flex justify="center" align="center" direction="column" gap="sm">
+          {withAction && onAdd ? (
+            <div className="w-full flex justify-between items-center">
               <Button
                 size="xs"
                 leftSection={
-                  <Icon
-                    icon="tabler:refresh"
-                    className="w-3 h-3 font-semibold"
-                  />
+                  <Icon icon="tabler:plus" className="w-3 h-3 font-semibold" />
                 }
-                variant="default"
-                onClick={handleRefresh}
+                variant="filled"
+                onClick={() => onAdd()}
               >
                 <Text fw={300} size="xs">
-                  Refresh
+                  Add {textName}
                 </Text>
               </Button>
-              <TextInput
-                size="xs"
-                leftSection={searchIcon}
-                placeholder="Cari di sini"
-                autoComplete="off"
-                onKeyDown={searchFieldHandling}
-                aria-label="pencarian"
-                name="s"
-                ref={searchRef} // Attach ref to the input field
-              />
-            </>
-          ) : null}
-          {withFilter && onFilter && onFilterReset ? (
-            <>
-              <Popover
-                opened={filterOpened}
-                width={350}
-                radius={10}
-                position="bottom"
-                trapFocus
-                clickOutsideEvents={["mouseup", "touchend"]}
-                shadow="md"
-                offset={{ mainAxis: 5, crossAxis: -135 }}
+              <ActionIcon
+                variant="light"
+                size="lg"
+                color="billGreen"
+                onClick={() => {
+                  setShowOtherMobileButton((s) => !s);
+                }}
+                className="rounded-full md:hidden"
               >
-                <Popover.Target>
-                  <Button
-                    size="xs"
-                    leftSection={
-                      <Icon
-                        icon="tabler:filter"
-                        className="w-3 h-3 font-semibold"
-                      />
-                    }
-                    variant="default"
-                    onClick={() => setFilterOpened((o) => !o)}
-                  >
-                    <Text fw={300} size="xs">
-                      Filter
-                    </Text>
-                  </Button>
-                </Popover.Target>
-                <Popover.Dropdown className="p-0 border-0">
-                  <div className="filter-header bg-tm-gray-100 p-2 items-center rounded-t-[10px] border-b-tm-gray-300 border-[1px] border-t-0 border-r-0 border-l-0 px-6 inline-flex w-full justify-between">
-                    <Text className="font-medium">Filter</Text>
-                    <Button
-                      bg="transparent"
-                      onClick={() => {
-                        setFilterOpened(false);
-                        onFilterReset();
-                      }}
-                      className="p-0 m-0"
+                <Icon icon="tabler:dots" className="h-6 w-6" />
+              </ActionIcon>
+            </div>
+          ) : (
+            <div className="w-full sm:w-[50%]">&nbsp;</div>
+          )}
+
+          {showOtherMobileButton && (
+            <div
+              className={`border rounded-lg p-4 transition-all duration-500 ease-in-out bg-bill-gray-100`}
+            >
+              <div className="w-full sm:w-[50%] gap-2 flex justify-between items-center">
+                {withSearchField && onRefresh ? (
+                  <>
+                    <TextInput
                       size="xs"
-                    >
-                      <IconX color="black"></IconX>
-                    </Button>
-                  </div>
-                  <div className="py-4 px-6">
-                    {FilterComponent ? <FilterComponent /> : null}
-                  </div>
-                  <div className="filter-footer p-4 items-center rounded-b-[10px] border-t-tm-gray-300 border-[1px] border-b-0 border-r-0 border-l-0 px-6 inline-flex w-full justify-around">
+                      leftSection={searchIcon}
+                      placeholder="Cari di sini"
+                      autoComplete="off"
+                      onKeyDown={searchFieldHandling}
+                      aria-label="pencarian"
+                      name="s"
+                      ref={searchRef} // Attach ref to the input field
+                    />
                     <Button
-                      size="sm"
+                      size="xs"
                       leftSection={
                         <Icon
-                          icon="tabler:x"
-                          className="text-tm-dark-800 text-xl font-bold"
+                          icon="tabler:refresh"
+                          className="w-3 h-3 font-semibold"
                         />
                       }
-                      className="border-tm-gray-400"
-                      variant="outline"
-                      type="button"
-                      onClick={() => onFilterReset()}
+                      variant="default"
+                      onClick={handleRefresh}
                     >
-                      <Text fw={300} size="sm" className="text-tm-dark-800">
-                        Atur Ulang
+                      <Text fw={300} size="xs">
+                        Refresh
                       </Text>
                     </Button>
+                  </>
+                ) : null}
+                {withFilter && onFilter && onFilterReset ? (
+                  <>
+                    <Popover
+                      opened={filterOpened}
+                      width={350}
+                      radius={10}
+                      position="bottom"
+                      trapFocus
+                      clickOutsideEvents={["mouseup", "touchend"]}
+                      shadow="md"
+                      offset={{ mainAxis: 5, crossAxis: -135 }}
+                    >
+                      <Popover.Target>
+                        <Button
+                          size="xs"
+                          leftSection={
+                            <Icon
+                              icon="tabler:filter"
+                              className="w-3 h-3 font-semibold"
+                            />
+                          }
+                          variant="default"
+                          onClick={() => setFilterOpened((o) => !o)}
+                        >
+                          <Text fw={300} size="xs">
+                            Filter
+                          </Text>
+                        </Button>
+                      </Popover.Target>
+                      <Popover.Dropdown className="p-0 border-0">
+                        <div className="filter-header bg-tm-gray-100 p-2 items-center rounded-t-[10px] border-b-tm-gray-300 border-[1px] border-t-0 border-r-0 border-l-0 px-6 inline-flex w-full justify-between">
+                          <Text className="font-medium">Filter</Text>
+                          <Button
+                            bg="transparent"
+                            onClick={() => {
+                              setFilterOpened(false);
+                              onFilterReset();
+                            }}
+                            className="p-0 m-0"
+                            size="xs"
+                          >
+                            <IconX color="black"></IconX>
+                          </Button>
+                        </div>
+                        <div className="py-4 px-6">
+                          {FilterComponent ? <FilterComponent /> : null}
+                        </div>
+                        <div className="filter-footer p-4 items-center rounded-b-[10px] border-t-tm-gray-300 border-[1px] border-b-0 border-r-0 border-l-0 px-6 inline-flex w-full justify-around">
+                          <Button
+                            size="sm"
+                            leftSection={
+                              <Icon
+                                icon="tabler:x"
+                                className="text-tm-dark-800 text-xl font-bold"
+                              />
+                            }
+                            className="border-tm-gray-400"
+                            variant="outline"
+                            type="button"
+                            onClick={() => onFilterReset()}
+                          >
+                            <Text
+                              fw={300}
+                              size="sm"
+                              className="text-tm-dark-800"
+                            >
+                              Atur Ulang
+                            </Text>
+                          </Button>
+                          <Button
+                            size="sm"
+                            leftSection={
+                              <Icon
+                                icon="tabler:filter"
+                                className="text-xl font-bold"
+                              />
+                            }
+                            variant="filled"
+                            onClick={() => onFilter()}
+                          >
+                            <Text fw={300} size="sm">
+                              Terapkan
+                            </Text>
+                          </Button>
+                        </div>
+                      </Popover.Dropdown>
+                    </Popover>
+                  </>
+                ) : null}
+              </div>
+
+              <div className="w-full sm:w-[50%] gap-2 flex justify-between items-center">
+                {withFilter && onFilter && onFilterReset ? (
+                  <>
+                    <Popover
+                      opened={filterOpened}
+                      width={350}
+                      radius={10}
+                      position="bottom"
+                      trapFocus
+                      clickOutsideEvents={["mouseup", "touchend"]}
+                      shadow="md"
+                      offset={{ mainAxis: 5, crossAxis: -135 }}
+                    >
+                      <Popover.Target>
+                        <Button
+                          size="xs"
+                          leftSection={
+                            <Icon
+                              icon="tabler:filter"
+                              className="w-3 h-3 font-semibold"
+                            />
+                          }
+                          variant="default"
+                          onClick={() => setFilterOpened((o) => !o)}
+                        >
+                          <Text fw={300} size="xs">
+                            Filter
+                          </Text>
+                        </Button>
+                      </Popover.Target>
+                      <Popover.Dropdown className="p-0 border-0">
+                        <div className="filter-header bg-tm-gray-100 p-2 items-center rounded-t-[10px] border-b-tm-gray-300 border-[1px] border-t-0 border-r-0 border-l-0 px-6 inline-flex w-full justify-between">
+                          <Text className="font-medium">Filter</Text>
+                          <Button
+                            bg="transparent"
+                            onClick={() => {
+                              setFilterOpened(false);
+                              onFilterReset();
+                            }}
+                            className="p-0 m-0"
+                            size="xs"
+                          >
+                            <IconX color="black"></IconX>
+                          </Button>
+                        </div>
+                        <div className="py-4 px-6">
+                          {FilterComponent ? <FilterComponent /> : null}
+                        </div>
+                        <div className="filter-footer p-4 items-center rounded-b-[10px] border-t-tm-gray-300 border-[1px] border-b-0 border-r-0 border-l-0 px-6 inline-flex w-full justify-around">
+                          <Button
+                            size="sm"
+                            leftSection={
+                              <Icon
+                                icon="tabler:x"
+                                className="text-tm-dark-800 text-xl font-bold"
+                              />
+                            }
+                            className="border-tm-gray-400"
+                            variant="outline"
+                            type="button"
+                            onClick={() => onFilterReset()}
+                          >
+                            <Text
+                              fw={300}
+                              size="sm"
+                              className="text-tm-dark-800"
+                            >
+                              Atur Ulang
+                            </Text>
+                          </Button>
+                          <Button
+                            size="sm"
+                            leftSection={
+                              <Icon
+                                icon="tabler:filter"
+                                className="text-xl font-bold"
+                              />
+                            }
+                            variant="filled"
+                            onClick={() => onFilter()}
+                          >
+                            <Text fw={300} size="sm">
+                              Terapkan
+                            </Text>
+                          </Button>
+                        </div>
+                      </Popover.Dropdown>
+                    </Popover>
+                  </>
+                ) : null}
+              </div>
+            </div>
+          )}
+
+          {isLoading ? (
+            <p>Loading...</p>
+          ) : table.getRowModel().rows.length ? (
+            table.getRowModel().rows.map((row) =>
+              row.getVisibleCells().map((cell) => {
+                return (
+                  <p key={cell.id}>
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </p>
+                );
+              })
+            )
+          ) : (
+            <Card>Data kosong</Card>
+          )}
+        </Flex>
+      </ScrollArea>
+
+      {/* for web / large display */}
+      <Table.ScrollContainer minWidth={500} className="hidden md:block">
+        <Flex className="mb-2" justify="space-between">
+          {/* ADD BUTTON */}
+          {withAction && onAdd ? (
+            <div className="w-full sm:w-[50%]">
+              <Button
+                size="xs"
+                leftSection={
+                  <Icon icon="tabler:plus" className="w-3 h-3 font-semibold" />
+                }
+                variant="filled"
+                onClick={() => onAdd()}
+              >
+                <Text fw={300} size="xs">
+                  Add {textName}
+                </Text>
+              </Button>
+            </div>
+          ) : (
+            <div className="w-full sm:w-[50%]">&nbsp;</div>
+          )}
+
+          <div className="w-full sm:w-[50%] gap-2 flex justify-end items-center">
+            {withSearchField && onRefresh ? (
+              <>
+                <Button
+                  size="xs"
+                  leftSection={
+                    <Icon
+                      icon="tabler:refresh"
+                      className="w-3 h-3 font-semibold"
+                    />
+                  }
+                  variant="default"
+                  onClick={handleRefresh}
+                >
+                  <Text fw={300} size="xs">
+                    Refresh
+                  </Text>
+                </Button>
+                <TextInput
+                  size="xs"
+                  leftSection={searchIcon}
+                  placeholder="Cari di sini"
+                  autoComplete="off"
+                  onKeyDown={searchFieldHandling}
+                  aria-label="pencarian"
+                  name="s"
+                  ref={searchRef} // Attach ref to the input field
+                />
+              </>
+            ) : null}
+            {withFilter && onFilter && onFilterReset ? (
+              <>
+                <Popover
+                  opened={filterOpened}
+                  width={350}
+                  radius={10}
+                  position="bottom"
+                  trapFocus
+                  clickOutsideEvents={["mouseup", "touchend"]}
+                  shadow="md"
+                  offset={{ mainAxis: 5, crossAxis: -135 }}
+                >
+                  <Popover.Target>
                     <Button
-                      size="sm"
+                      size="xs"
                       leftSection={
                         <Icon
                           icon="tabler:filter"
-                          className="text-xl font-bold"
+                          className="w-3 h-3 font-semibold"
                         />
                       }
-                      variant="filled"
-                      onClick={() => onFilter()}
+                      variant="default"
+                      onClick={() => setFilterOpened((o) => !o)}
                     >
-                      <Text fw={300} size="sm">
-                        Terapkan
+                      <Text fw={300} size="xs">
+                        Filter
                       </Text>
                     </Button>
-                  </div>
-                </Popover.Dropdown>
-              </Popover>
-            </>
-          ) : null}
-        </div>
-      </Flex>
-      <Paper withBorder p={".8px"}>
-        <Table
-          bg="#fff"
-          verticalSpacing="xs"
-          striped
-          withColumnBorders
-          withTableBorder={false}
-          withRowBorders
-          variant="default"
-          {...props}
-        >
-          <Table.Thead>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <Table.Tr key={headerGroup.id}>
-                {headerGroup.headers.map((header) => {
-                  // START HEAD CHECKBOX ---------------------------------------------
-                  const { column } = header;
-                  // if (header.id === "select") {
-                  //   return (
-                  //     <Table.Th key={header.id} style={{ width: rem(40) }}>
-                  //       {header.isPlaceholder ? null : (
-                  //         <Container
-                  //           pos="relative"
-                  //           display="flex"
-                  //           className="left-[1px] p-0"
-                  //         >
-                  //           {flexRender(
-                  //             header.column.columnDef.header,
-                  //             header.getContext(),
-                  //           )}
-                  //         </Container>
-                  //       )}
-                  //     </Table.Th>
-                  //   );
-                  // }
-                  // END HEAD CHECKBOX -----------------------------------------------
-
-                  return (
-                    <Table.Th
-                      key={header.id}
-                      className="text-sm font-semibold leading-none p-2 text-ihcGrey-700"
-                      style={{
-                        ...getCommonPinningStyles(
-                          column as Column<unknown, unknown>
-                        ),
-                        width: column.getSize(),
-                      }}
-                    >
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
-                    </Table.Th>
-                  );
-                })}
-
-                {withAction ? (
-                  <Table.Th
-                    className="text-sm font-semibold leading-none p-2 text-ihcGrey-700"
-                    style={{
-                      width: "1%", // Shrinks to fit content
-                      whiteSpace: "nowrap", // Prevents unnecessary wrapping
-                    }}
-                  >
-                    Action
-                  </Table.Th>
-                ) : null}
-              </Table.Tr>
-            ))}
-          </Table.Thead>
-          <Table.Tbody>
-            {isLoading ? (
-              <Table.Tr>
-                <Table.Td
-                  colSpan={withAction ? columns.length + 1 : columns.length}
-                  className="h-24 text-center"
-                >
-                  Memuat Data...
-                </Table.Td>
-              </Table.Tr>
-            ) : table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
-                <Table.Tr
-                  key={row.id}
-                  data-state={row.getIsSelected() ? "selected" : null}
-                  className={clsx({
-                    "cursor-pointer hoverable": !!onTrClick,
-                  })}
-                  onClick={() => onTrClick && onTrClick(row.original)}
-                >
-                  {row.getVisibleCells().map((cell) => {
-                    // START ROW CHECKBOX  ---------------------------------------------
-                    const { column } = cell;
-                    // if (cell.column.id === "select")
+                  </Popover.Target>
+                  <Popover.Dropdown className="p-0 border-0">
+                    <div className="filter-header bg-tm-gray-100 p-2 items-center rounded-t-[10px] border-b-tm-gray-300 border-[1px] border-t-0 border-r-0 border-l-0 px-6 inline-flex w-full justify-between">
+                      <Text className="font-medium">Filter</Text>
+                      <Button
+                        bg="transparent"
+                        onClick={() => {
+                          setFilterOpened(false);
+                          onFilterReset();
+                        }}
+                        className="p-0 m-0"
+                        size="xs"
+                      >
+                        <IconX color="black"></IconX>
+                      </Button>
+                    </div>
+                    <div className="py-4 px-6">
+                      {FilterComponent ? <FilterComponent /> : null}
+                    </div>
+                    <div className="filter-footer p-4 items-center rounded-b-[10px] border-t-tm-gray-300 border-[1px] border-b-0 border-r-0 border-l-0 px-6 inline-flex w-full justify-around">
+                      <Button
+                        size="sm"
+                        leftSection={
+                          <Icon
+                            icon="tabler:x"
+                            className="text-tm-dark-800 text-xl font-bold"
+                          />
+                        }
+                        className="border-tm-gray-400"
+                        variant="outline"
+                        type="button"
+                        onClick={() => onFilterReset()}
+                      >
+                        <Text fw={300} size="sm" className="text-tm-dark-800">
+                          Atur Ulang
+                        </Text>
+                      </Button>
+                      <Button
+                        size="sm"
+                        leftSection={
+                          <Icon
+                            icon="tabler:filter"
+                            className="text-xl font-bold"
+                          />
+                        }
+                        variant="filled"
+                        onClick={() => onFilter()}
+                      >
+                        <Text fw={300} size="sm">
+                          Terapkan
+                        </Text>
+                      </Button>
+                    </div>
+                  </Popover.Dropdown>
+                </Popover>
+              </>
+            ) : null}
+          </div>
+        </Flex>
+        <Paper withBorder p={".8px"}>
+          <Table
+            bg="#fff"
+            verticalSpacing="xs"
+            striped
+            withColumnBorders
+            withTableBorder={false}
+            withRowBorders
+            variant="default"
+            {...props}
+          >
+            <Table.Thead>
+              {table.getHeaderGroups().map((headerGroup) => (
+                <Table.Tr key={headerGroup.id}>
+                  {headerGroup.headers.map((header) => {
+                    // START HEAD CHECKBOX ---------------------------------------------
+                    const { column } = header;
+                    // if (header.id === "select") {
                     //   return (
-                    //     <Table.Td key={cell.id}>
-                    //       <Container
-                    //         pos="relative"
-                    //         display="flex"
-                    //         className="left-[1px] p-0"
-                    //       >
-                    //         {flexRender(
-                    //           cell.column.columnDef.cell,
-                    //           cell.getContext(),
-                    //         )}
-                    //       </Container>
-                    //     </Table.Td>
+                    //     <Table.Th key={header.id} style={{ width: rem(40) }}>
+                    //       {header.isPlaceholder ? null : (
+                    //         <Container
+                    //           pos="relative"
+                    //           display="flex"
+                    //           className="left-[1px] p-0"
+                    //         >
+                    //           {flexRender(
+                    //             header.column.columnDef.header,
+                    //             header.getContext(),
+                    //           )}
+                    //         </Container>
+                    //       )}
+                    //     </Table.Th>
                     //   );
-                    // END ROW CHECKBOX  -----------------------------------------------
+                    // }
+                    // END HEAD CHECKBOX -----------------------------------------------
 
                     return (
-                      <Table.Td
-                        key={cell.id}
-                        className="text-sm leading-none text-black"
+                      <Table.Th
+                        key={header.id}
+                        className="text-sm font-semibold leading-none p-2 text-ihcGrey-700"
                         style={{
                           ...getCommonPinningStyles(
                             column as Column<unknown, unknown>
                           ),
                           width: column.getSize(),
                         }}
-                        onClick={(e) =>
-                          cell.column.id === "select" && e.stopPropagation()
-                        }
                       >
-                        {flexRender(
-                          cell.column.columnDef.cell,
-                          cell.getContext()
-                        )}
-                      </Table.Td>
+                        {header.isPlaceholder
+                          ? null
+                          : flexRender(
+                              header.column.columnDef.header,
+                              header.getContext()
+                            )}
+                      </Table.Th>
                     );
                   })}
 
                   {withAction ? (
-                    <Table.Td
-                      className="text-sm leading-none text-black"
+                    <Table.Th
+                      className="text-sm font-semibold leading-none p-2 text-ihcGrey-700"
                       style={{
                         width: "1%", // Shrinks to fit content
                         whiteSpace: "nowrap", // Prevents unnecessary wrapping
                       }}
                     >
-                      {onEdit ? (
-                        <ActionIcon
-                          variant="subtle"
-                          color="tmDark.8"
-                          size="md"
-                          aria-label="Edit"
-                          onClick={() => onEdit(row.original)}
-                        >
-                          <IconEdit />
-                        </ActionIcon>
-                      ) : null}
-                      {onDelete ? (
-                        <ActionIcon
-                          variant="subtle"
-                          color="tmDark.8"
-                          size="md"
-                          aria-label="Delete"
-                          onClick={() => onDelete(row.original)}
-                        >
-                          <IconTrash />
-                        </ActionIcon>
-                      ) : null}
-                    </Table.Td>
+                      Action
+                    </Table.Th>
                   ) : null}
                 </Table.Tr>
-              ))
-            ) : (
-              <Table.Tr>
-                <Table.Td
-                  colSpan={withAction ? columns.length + 1 : columns.length}
-                  className="h-24 text-center"
-                >
-                  Data Kosong.
-                </Table.Td>
-              </Table.Tr>
-            )}
-          </Table.Tbody>
-        </Table>
-      </Paper>
-    </Table.ScrollContainer>
+              ))}
+            </Table.Thead>
+            <Table.Tbody>
+              {isLoading ? (
+                <Table.Tr>
+                  <Table.Td
+                    colSpan={withAction ? columns.length + 1 : columns.length}
+                    className="h-24 text-center"
+                  >
+                    Memuat Data...
+                  </Table.Td>
+                </Table.Tr>
+              ) : table.getRowModel().rows?.length ? (
+                table.getRowModel().rows.map((row) => (
+                  <Table.Tr
+                    key={row.id}
+                    data-state={row.getIsSelected() ? "selected" : null}
+                    className={clsx({
+                      "cursor-pointer hoverable": !!onTrClick,
+                    })}
+                    onClick={() => onTrClick && onTrClick(row.original)}
+                  >
+                    {row.getVisibleCells().map((cell) => {
+                      // START ROW CHECKBOX  ---------------------------------------------
+                      const { column } = cell;
+                      // if (cell.column.id === "select")
+                      //   return (
+                      //     <Table.Td key={cell.id}>
+                      //       <Container
+                      //         pos="relative"
+                      //         display="flex"
+                      //         className="left-[1px] p-0"
+                      //       >
+                      //         {flexRender(
+                      //           cell.column.columnDef.cell,
+                      //           cell.getContext(),
+                      //         )}
+                      //       </Container>
+                      //     </Table.Td>
+                      //   );
+                      // END ROW CHECKBOX  -----------------------------------------------
+
+                      return (
+                        <Table.Td
+                          key={cell.id}
+                          className="text-sm leading-none text-black"
+                          style={{
+                            ...getCommonPinningStyles(
+                              column as Column<unknown, unknown>
+                            ),
+                            width: column.getSize(),
+                          }}
+                          onClick={(e) =>
+                            cell.column.id === "select" && e.stopPropagation()
+                          }
+                        >
+                          {flexRender(
+                            cell.column.columnDef.cell,
+                            cell.getContext()
+                          )}
+                        </Table.Td>
+                      );
+                    })}
+
+                    {withAction ? (
+                      <Table.Td
+                        className="text-sm leading-none text-black"
+                        style={{
+                          width: "1%", // Shrinks to fit content
+                          whiteSpace: "nowrap", // Prevents unnecessary wrapping
+                        }}
+                      >
+                        {onEdit ? (
+                          <ActionIcon
+                            variant="subtle"
+                            color="tmDark.8"
+                            size="md"
+                            aria-label="Edit"
+                            onClick={() => onEdit(row.original)}
+                          >
+                            <IconEdit />
+                          </ActionIcon>
+                        ) : null}
+                        {onDelete ? (
+                          <ActionIcon
+                            variant="subtle"
+                            color="tmDark.8"
+                            size="md"
+                            aria-label="Delete"
+                            onClick={() => onDelete(row.original)}
+                          >
+                            <IconTrash />
+                          </ActionIcon>
+                        ) : null}
+                      </Table.Td>
+                    ) : null}
+                  </Table.Tr>
+                ))
+              ) : (
+                <Table.Tr>
+                  <Table.Td
+                    colSpan={withAction ? columns.length + 1 : columns.length}
+                    className="h-24 text-center"
+                  >
+                    Data Kosong.
+                  </Table.Td>
+                </Table.Tr>
+              )}
+            </Table.Tbody>
+          </Table>
+        </Paper>
+      </Table.ScrollContainer>
+    </>
   );
 }

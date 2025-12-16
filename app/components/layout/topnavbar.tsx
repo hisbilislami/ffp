@@ -21,10 +21,14 @@ export function Topnavbar({
   return (
     <header
       className={cn(
-        "z-10 bg-white py-3 px-[44px] w-[95%] shadow-sm",
-        "flex justify-between items-center rounded-2xl"
+        "z-10 bg-white py-3 px-4 md:px-[44px] w-full md:w-[95%] shadow-sm",
+        "flex justify-between items-center rounded-none md:rounded-2xl"
       )}
     >
+      <ActionIcon variant="light" size="lg" className="rounded-full md:hidden">
+        <Icon icon="tabler:menu" className="h-6 w-6" />
+      </ActionIcon>
+
       <Group className="py-2">
         <TextInput
           size="xs"
@@ -52,8 +56,8 @@ export function Topnavbar({
       <div className="flex gap-3">
         <ActionIcon
           variant="gradient"
-          size="xl"
-          className="rounded-full"
+          size={36}
+          className="!rounded-full"
           aria-label="Gradient action icon"
           gradient={{ from: "#28B87A", to: "#3BC9DB", deg: 180 }}
         >
@@ -86,16 +90,14 @@ export function Topnavbar({
             </Menu.Item>
             <Menu.Divider />
             <Form method="post" action="/auth/logout">
-              <UnstyledButton type="submit" className="w-full">
-                <Menu.Item
-                  color="red"
-                  leftSection={
-                    <Icon icon="tabler:logout" className="w-4 h-4" />
-                  }
-                >
-                  Logout
-                </Menu.Item>
-              </UnstyledButton>
+              <Menu.Item
+                type="submit"
+                component="button"
+                color="red"
+                leftSection={<Icon icon="tabler:logout" className="w-4 h-4" />}
+              >
+                Logout
+              </Menu.Item>
             </Form>
           </Menu.Dropdown>
         </Menu>
