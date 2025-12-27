@@ -18,23 +18,46 @@ const Summary = ({ data }: { data: ListTransaction[] }) => {
 
   return (
     <div className="grid grid-cols-3">
-      <div className="bg-bill-orange-300 col-start-3 p-3 rounded-lg">
+      <div className="bg-bill-orange-300 col-start-1 sm:col-start-3 p-3 rounded-lg w-[70vw] sm:w-full">
         <Text fw={700} className="my-3">
           Summary
         </Text>
         <Table className="table">
           <tbody>
             <tr>
-              <td>Total Estimate Price</td>
-              <td width="50%"> : {convertToRupiah(totalEstPrice)}</td>
+              <td valign="top" className="text-nowrap">
+                Total Estimate Price
+              </td>
+              <td width="50%" valign="top">
+                {" "}
+                <Text fw={600} size="sm">
+                  {" "}
+                  : {convertToRupiah(totalEstPrice)}
+                </Text>
+              </td>
             </tr>
             <tr>
-              <td>Total Real Price</td>
-              <td width="50%"> : {convertToRupiah(totalRealPrice)}</td>
+              <td valign="top" className="text-nowrap">
+                Total Real Price
+              </td>
+              <td width="50%" valign="top">
+                {" "}
+                <Text fw={600} size="sm">
+                  {" "}
+                  : {convertToRupiah(totalRealPrice)}
+                </Text>
+              </td>
             </tr>
             <tr>
-              <td>Total Different Price</td>
-              <td width="50%"> : {convertToRupiah(totalDiffPrice)}</td>
+              <td valign="top" className="text-nowrap">
+                Total Different Price
+              </td>
+              <td width="50%" valign="top">
+                {" "}
+                <Text fw={600} size="sm">
+                  : {convertToRupiah(totalDiffPrice)}{" "}
+                </Text>
+              </td>
             </tr>
           </tbody>
         </Table>

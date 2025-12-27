@@ -25,7 +25,12 @@ export function Topnavbar({
         "flex justify-between items-center rounded-none md:rounded-2xl"
       )}
     >
-      <ActionIcon variant="light" size="lg" className="rounded-full md:hidden">
+      <ActionIcon
+        variant="light"
+        size="lg"
+        className="rounded-full"
+        hiddenFrom="sm"
+      >
         <Icon icon="tabler:menu" className="h-6 w-6" />
       </ActionIcon>
 

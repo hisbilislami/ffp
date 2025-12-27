@@ -3,8 +3,10 @@ import {
   ActionIcon,
   Button,
   Card,
+  Center,
   CSSProperties,
   Flex,
+  Grid,
   Paper,
   Popover,
   ScrollArea,
@@ -22,6 +24,7 @@ import {
 } from "@tanstack/react-table";
 import { clsx } from "clsx";
 import { ComponentType, useRef, useState } from "react";
+import OptionDialog from "../dialog/option-dialog";
 
 interface DataTableProps<TData, TValue> extends TableProps {
   table: TableType<TData>;
@@ -113,11 +116,13 @@ export function DataTable<TData, TValue>({
     useState<boolean>(false);
 
   const searchIcon = <IconSearch size={16} stroke={1.5} />;
+
+  const [showOptionDialog, setShowOptionDialog] = useState<boolean>(false);
+
   return (
     <>
       {/* for mobile */}
-
-      <ScrollArea className="block md:hidden">
+      <ScrollArea className="block md:hidden min-h-[63vh]">
         <Flex justify="center" align="center" direction="column" gap="sm">
           {withAction && onAdd ? (
             <div className="w-full flex justify-between items-center">
@@ -371,15 +376,82 @@ export function DataTable<TData, TValue>({
           {isLoading ? (
             <p>Loading...</p>
           ) : table.getRowModel().rows.length ? (
-            table.getRowModel().rows.map((row) =>
-              row.getVisibleCells().map((cell) => {
-                return (
-                  <p key={cell.id}>
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </p>
-                );
-              })
-            )
+            table.getRowModel().rows.map((row) => (
+              <>
+                <OptionDialog
+                  opened={showOptionDialog}
+                  onClose={() => setShowOptionDialog(false)}
+                  onEdit={() => onEdit?.(row.original)}
+                  onDelete={() => onDelete?.(row.original)}
+                />
+                <Card
+                  key={row.id}
+                  className="w-full flex justify-center"
+                  mih={50}
+                  onClick={() => {
+                    setShowOptionDialog(true);
+                  }}
+                  radius={"md"}
+                  bg={"billOrange.1"}
+                  p={"xs"}
+                >
+                  <Grid columns={5} align="center">
+                    <Grid.Col span={1}>
+                      <Center>
+                        <Icon
+                          className="text-bill-orange-500"
+                          icon="tabler:moneybag"
+                        />
+                      </Center>
+                    </Grid.Col>
+                    <Grid.Col span={3} px={"3px"}>
+                      <ul>
+                        {row.getVisibleCells().map((cell) => {
+                          const meta = cell.column.columnDef.meta;
+                          const label = meta?.mobileLabel;
+                          const showLabel = meta?.showColumnNameOnMobile;
+
+                          return (
+                            <li key={cell.id} className="flex">
+                              {showLabel && (
+                                <>
+                                  {/* Label */}
+                                  <Text
+                                    size="xs"
+                                    c="dimmed"
+                                    fw={500}
+                                    miw={"50%"}
+                                  >
+                                    {label}
+                                  </Text>
+                                </>
+                              )}
+
+                              {/* Value */}
+                              <Text size="xs" fw={600} miw={"50%"}>
+                                {showLabel ? " : " : null}
+                                {flexRender(
+                                  cell.column.columnDef.cell,
+                                  cell.getContext()
+                                )}
+                              </Text>
+                            </li>
+                          );
+                        })}
+                      </ul>
+                    </Grid.Col>
+                    <Grid.Col span={1}>
+                      <Center>
+                        <Icon
+                          icon="tabler:chevron-right"
+                          className="text-bill-orange-500"
+                        />
+                      </Center>
+                    </Grid.Col>
+                  </Grid>
+                </Card>
+              </>
+            ))
           ) : (
             <Card>Data kosong</Card>
           )}

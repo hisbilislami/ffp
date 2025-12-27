@@ -11,7 +11,11 @@ import {
 } from "@remix-run/react";
 import AppCardForm from "~/components/card/app-card-form";
 import { useMemo, useState } from "react";
-import { DataTable, useDataTable } from "~/components/table";
+import {
+  DataTable,
+  DataTablePagination,
+  useDataTable,
+} from "~/components/table";
 import { columns, ListBudgetTracker } from "./columns";
 import { loaderHandler } from "./loader";
 import { actionHandler } from "./action";
@@ -162,6 +166,9 @@ export default function BudgetTrackerLists() {
           withSearchField={true}
           onRefresh={onRefresh}
         />
+        <div className="w-full mt-4 sm:mt-1">
+          <DataTablePagination table={table} />
+        </div>
       </AppCardForm>
 
       <Modal

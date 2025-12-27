@@ -36,7 +36,7 @@ export function DataTablePagination<TData>({
     <div
       className={cn(
         "flex items-center",
-        showSelection ? "justify-between" : "justify-end",
+        showSelection ? "justify-between" : "justify-center sm:justify-end"
       )}
     >
       {showSelection ? (
@@ -67,6 +67,7 @@ export function DataTablePagination<TData>({
             total={table.getPageCount()}
             value={table.getState().pagination.pageIndex + 1}
             onChange={(value) => onTablePageChange(value)}
+            radius={"md"}
             onNextPage={() => {
               onClickNextPage(table.getState().pagination.pageIndex);
             }}

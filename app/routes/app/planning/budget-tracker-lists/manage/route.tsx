@@ -87,20 +87,40 @@ const BudgetTrackerForm = () => {
           isForm={true}
           title="Budget Tracker"
           actionButtons={
-            <div className="flex gap-4 justify-between w-full">
+            <div className="flex gap-1 sm:gap-5 justify-center sm:justify-between w-full">
               <div>
                 <Button
                   type="button"
                   size="xs"
-                  leftSection={
-                    <Icon icon="tabler:arrow-back-up" className="h-5 w-5" />
-                  }
+                  display={{
+                    base: "block",
+                    sm: "none",
+                  }}
                   variant="filled"
                   color="billYellow"
                   onClick={() =>
                     navigate("/app/planning/budget-tracker-lists/")
                   }
                   loading={navigation.state !== "idle"}
+                >
+                  <Icon icon="tabler:arrow-back-up" className="h-5 w-5" />
+                </Button>
+                <Button
+                  type="button"
+                  size="xs"
+                  display={{
+                    base: "none",
+                    sm: "block",
+                  }}
+                  variant="filled"
+                  color="billYellow"
+                  onClick={() =>
+                    navigate("/app/planning/budget-tracker-lists/")
+                  }
+                  loading={navigation.state !== "idle"}
+                  leftSection={
+                    <Icon icon="tabler:arrow-back-up" className="h-5 w-5" />
+                  }
                 >
                   Back to the main list
                 </Button>
@@ -109,6 +129,10 @@ const BudgetTrackerForm = () => {
               <div className="inline-flex gap-2">
                 <Button
                   type="button"
+                  display={{
+                    base: "none",
+                    sm: "block",
+                  }}
                   onClick={() => {
                     estimatePrice.change(undefined);
                     realPrice.change(undefined);
@@ -126,7 +150,30 @@ const BudgetTrackerForm = () => {
                   Reset
                 </Button>
                 <Button
+                  type="button"
+                  display={{
+                    base: "block",
+                    sm: "none",
+                  }}
+                  onClick={() => {
+                    estimatePrice.change(undefined);
+                    realPrice.change(undefined);
+                    diffPrice.change(undefined);
+                    qty.change(undefined);
+                    description.change(undefined);
+                    id.change(undefined);
+                  }}
+                  loading={navigation.state !== "idle"}
+                  variant="default"
+                >
+                  <Icon icon="streamline-plump:reset-clock-solid" />
+                </Button>
+                <Button
                   type="submit"
+                  display={{
+                    base: "none",
+                    sm: "block",
+                  }}
                   loading={navigation.state !== "idle"}
                   leftSection={
                     <Icon icon="material-symbols:save-clock-rounded" />
@@ -134,12 +181,27 @@ const BudgetTrackerForm = () => {
                 >
                   Submit
                 </Button>
+                <Button
+                  type="submit"
+                  display={{
+                    base: "block",
+                    sm: "none",
+                  }}
+                  loading={navigation.state !== "idle"}
+                >
+                  <Icon icon="material-symbols:save-clock-rounded" />
+                </Button>
               </div>
             </div>
           }
         >
           <Grid>
-            <Grid.Col span={6}>
+            <Grid.Col
+              span={{
+                base: 12,
+                sm: 6,
+              }}
+            >
               <input {...getInputProps(fields.budgetId, { type: "hidden" })} />
               <input {...getInputProps(fields.id, { type: "hidden" })} />
               <input
@@ -177,7 +239,12 @@ const BudgetTrackerForm = () => {
                 disabled
               />
             </Grid.Col>
-            <Grid.Col span={6}>
+            <Grid.Col
+              span={{
+                base: 12,
+                sm: 6,
+              }}
+            >
               <Textarea
                 rows={4}
                 {...budgetTrackerLabel["description"]}
