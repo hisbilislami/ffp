@@ -1,5 +1,9 @@
 NODE_ENV=development
+# Database Config: Set DB_PROVIDER to either 'postgresql' or 'sqlite'
+DB_PROVIDER=postgresql
 DATABASE_URL=postgres://hisbil:islami@localhost:54332/ffp
+# For SQLite, use: DATABASE_URL=file:./prisma/dev.db
+
 REDIS_URL=localhost
 SESSION_SECRET=38d34d11169343c6
 SESSION_TTL=3600

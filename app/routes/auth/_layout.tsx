@@ -1,9 +1,8 @@
 import { Image, Text } from "@mantine/core";
 import { Outlet } from "@remix-run/react";
 import { AiTwotoneMoneyCollect } from "react-icons/ai";
-import { GiFarmTractor } from "react-icons/gi";
+import { GiFarmTractor, GiPlantWatering } from "react-icons/gi";
 import { RiSecurePaymentFill } from "react-icons/ri";
-import { GiPlantWatering } from "react-icons/gi";
 
 const AuthenticationLayout = () => {
   return (

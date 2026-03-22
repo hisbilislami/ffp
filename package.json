@@ -8,7 +8,13 @@
     "dev": "remix vite:dev",
     "lint": "eslint --ignore-path .gitignore --cache --cache-location ./node_modules/.cache/eslint .",
     "start": "remix-serve ./build/server/index.js",
-    "typecheck": "tsc"
+    "typecheck": "tsc",
+    "db:setup:pg": "cp prisma/schema.prisma prisma/schema.backup.prisma && prisma generate",
+    "db:setup:sqlite": "cp prisma/schema.sqlite.prisma prisma/schema.prisma && prisma generate",
+    "db:migrate:pg": "bun run db:setup:pg && prisma migrate dev",
+    "db:migrate:sqlite": "bun run db:setup:sqlite && prisma migrate dev",
+    "switch:db:pg": "bunx tsx scripts/switch-db.ts postgresql",
+    "switch:db:sqlite": "bunx tsx scripts/switch-db.ts sqlite"
   },
   "dependencies": {
     "@conform-to/react": "^1.4.0",
@@ -43,6 +49,7 @@
   "devDependencies": {
     "@iconify/react": "^6.0.0",
     "@remix-run/dev": "^2.16.5",
+    "@types/node": "^25.5.0",
     "@types/react": "^18.2.20",
     "@types/react-dom": "^18.2.7",
     "@typescript-eslint/eslint-plugin": "^6.7.4",
