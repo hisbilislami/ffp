@@ -10,7 +10,7 @@
     "start": "remix-serve ./build/server/index.js",
     "typecheck": "tsc",
     "postinstall": "prisma generate",
-    "vercel-build": "prisma generate && prisma migrate deploy && next build"
+    "vercel-build": "prisma generate && prisma migrate deploy && remix vite:build"
   },
   "dependencies": {
     "@conform-to/react": "^1.4.0",
