@@ -5,7 +5,7 @@ import { AppModuleMenu } from "./types";
 
 import { cn } from "~/utils/style";
 
-const appModuleData: AppModuleMenu[] = [
+export const appModuleData: AppModuleMenu[] = [
   {
     icon: "tabler:file-invoice",
     label: "Planning",

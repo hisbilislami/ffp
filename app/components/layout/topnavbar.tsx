@@ -10,6 +10,8 @@ import {
 import { Form, Link } from "@remix-run/react";
 
 import { cn } from "~/utils/style";
+import { MobileDrawer } from "./mobile-drawer";
+import { useState } from "react";
 
 export function Topnavbar({
   username = "",
@@ -18,6 +20,8 @@ export function Topnavbar({
   username: string;
   email: string;
 }) {
+  const [mobileDrawer, setMobileDrawer] = useState<boolean>(false);
+
   return (
     <header
       className={cn(
@@ -31,7 +35,15 @@ export function Topnavbar({
         className="rounded-full"
         hiddenFrom="sm"
       >
-        <Icon icon="tabler:menu" className="h-6 w-6" />
+        <Icon
+          icon="tabler:menu"
+          className="h-6 w-6"
+          onClick={() => setMobileDrawer(true)}
+        />
+        <MobileDrawer
+          onClose={() => setMobileDrawer(false)}
+          opened={mobileDrawer}
+        />
       </ActionIcon>
 
       <Group className="py-2">
