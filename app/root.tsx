@@ -134,16 +134,16 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Links />
       </head>
       <body>
-        <DialogProvider>
-          <MantineProvider theme={theme}>
+        <MantineProvider theme={theme}>
+          <DialogProvider>
             <NavigationProgress zIndex={9999} />
             <Notifications />
             <ShowServerToast />
             <DialogMessage />
             <ShowServerDialog />
             {children}
-          </MantineProvider>
-        </DialogProvider>
+          </DialogProvider>
+        </MantineProvider>
         <ScrollRestoration />
         <Scripts />
       </body>

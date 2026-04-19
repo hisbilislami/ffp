@@ -183,14 +183,14 @@ export default function BudgetTrackerLists() {
       >
         <Form method="POST" {...getFormProps(form)}>
           <Grid>
-            <Grid.Col span={6}>
+            <Grid.Col span={{ base: 12, md: 6 }}>
               <TextInput
                 {...btlLabel["name"]}
                 {...getInputProps(fields.name, { type: "text" })}
                 error={fields.name?.errors?.[0] ?? null}
               />
             </Grid.Col>
-            <Grid.Col span={6}>
+            <Grid.Col span={{ base: 12, md: 6 }}>
               <DatePickerInput
                 type="range"
                 label="Period"

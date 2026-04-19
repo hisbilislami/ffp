@@ -17,9 +17,10 @@ import { AppModuleMenu, AppPageMenu } from "./types";
 type LinksGroupProps = {
   menu: Omit<AppModuleMenu, "pages">;
   child: AppPageMenu[];
+  onNavigate?: () => void;
 };
 
-export function LinksGroup({ menu, child }: LinksGroupProps) {
+export function LinksGroup({ menu, child, onNavigate }: LinksGroupProps) {
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -46,12 +47,20 @@ export function LinksGroup({ menu, child }: LinksGroupProps) {
   }
 
   function onClickParentMenu() {
-    menu?.path && child.length === 0
-      ? navigate(menu.path)
-      : setOpened((o) => !o);
+    if (menu?.path && child.length === 0) {
+      onNavigate?.();
+      navigate(menu.path);
+    } else {
+      setOpened((o) => !o);
+    }
   }
   const items = (hasLinks ? child : []).map((link, idx) => (
-    <Link to={link.path} key={`menu-${link.path}-${idx}`} prefetch="none">
+    <Link
+      to={link.path}
+      key={`menu-${link.path}-${idx}`}
+      prefetch="none"
+      onClick={onNavigate}
+    >
       <UnstyledButton
         className={cn(
           "font-normal w-full !py-2 !pl-2 !ml-8 !text-sm",

@@ -34,6 +34,7 @@ export const MobileDrawer = ({ onClose, opened }: Props) => {
                 menu={module}
                 child={pages}
                 key={`menu-p-${menu.label}-${idx}`}
+                onNavigate={() => onClose(false)}
               />
             );
           })}
